@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://1ut045hnvr7n"]
+
+[node name="main_scene" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
