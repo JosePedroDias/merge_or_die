@@ -28,12 +28,13 @@ func _ready():
 	
 	for y in rows:
 		for x in columns:
-#warning-ignore:integer_division
-			var coords = Vector2i(x - columns / 2, y - rows / 2)
+			var coords = Vector2i(
+				int(x - columns/2.0),
+				int(y - rows   /2.0)
+			)
 			set_tile_cell(coords, "1")
-			pass
 			
-	set_highlight(Vector2i(0, 0))
+	#set_highlight(Vector2i(0, 0))
 			
 func set_tile_cell(coords: Vector2i, cell_type: String):
 	set_cell(DEFAULT_LAYER, coords, TILE_SET_ID, CELLS[cell_type])
