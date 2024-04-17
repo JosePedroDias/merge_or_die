@@ -37,7 +37,10 @@ func _ready():
 	#set_highlight(Vector2i(0, 0))
 			
 func set_tile_cell(coords: Vector2i, num: int):
-	set_cell(DEFAULT_LAYER, coords, TILE_SET_ID, CELLS["%s" % num])
+	var num_s = "%s" % num
+	set_cell(DEFAULT_LAYER, coords, TILE_SET_ID, CELLS[num_s])
+	var td = get_cell_tile_data(DEFAULT_LAYER, coords, TILE_SET_ID)
+	td.set_custom_data('num', num)
 	
 func set_highlight(coords: Vector2i, state: bool):
 	#highlighted = coords
@@ -60,20 +63,18 @@ func _input(event: InputEvent):
 		var coord0 = highlighted
 		highlighted = null
 		set_highlight(coord, false)
+	
+		var td = get_cell_tile_data(DEFAULT_LAYER, coord, TILE_SET_ID)
+		var td0 = get_cell_tile_data(DEFAULT_LAYER, coord0, TILE_SET_ID)
 		
-		var v = get_cell_source_id(DEFAULT_LAYER, coord)
-		var v0 = get_cell_source_id(DEFAULT_LAYER, coord0)
-		
-		if v != v0:
-			print("no")
-		else:
-			erase_cell(DEFAULT_LAYER, coord0)
-			var k = v + 1
-			print(k)
-			set_cell(DEFAULT_LAYER, coord, TILE_SET_ID, CELLS["%s" % k])
-		
-		# TODO get keys for 2 positions
-		# if different -> bad
-		
-		#if get_cell_source_id(DEFAULT_LAYER, co):
-		#	pass
+		if td != null && td0 != null:
+			var v  = td.get_custom_data('num')
+			var v0 = td0.get_custom_data('num')
+
+			if v == v0:
+				erase_cell(DEFAULT_LAYER, coord0)
+				v += 1
+				set_cell(	DEFAULT_LAYER, coord, TILE_SET_ID, CELLS["%s" % v])
+				var td2 = get_cell_tile_data(DEFAULT_LAYER, coord, TILE_SET_ID)
+				td2.set_custom_data('num', v)
+			
