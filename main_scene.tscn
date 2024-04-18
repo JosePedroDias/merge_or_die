@@ -53,15 +53,20 @@ penaltyAudio = NodePath("../AudioStreamPlayerPenalty")
 
 [node name="AudioStreamPlayerFill" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_m8s8k")
+volume_db = -11.556
 
 [node name="AudioStreamPlayerIncomingTick" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_4ejf5")
+volume_db = -22.305
 
 [node name="AudioStreamPlayerMerge" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("5_n1hh7")
+volume_db = -11.824
 
 [node name="AudioStreamPlayerMistake" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_g1d2b")
+volume_db = -25.53
 
 [node name="AudioStreamPlayerPenalty" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_oh786")
+volume_db = -13.974
