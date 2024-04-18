@@ -63,6 +63,11 @@ var levels = {
 	},
 }
 
+var lvl = levels[level]
+
+var bar_left = lvl["penalty_countdown"]
+var fill_left = lvl["fill_countdown"]
+
 func _ready():
 	clear_layer(DEFAULT_LAYER)
 	
@@ -72,23 +77,23 @@ func _ready():
 				int(x - columns/2.0),
 				int(y - rows   /2.0)
 			)
-			set_tile_cell(coords, 1)
-			
-	var timer := Timer.new()
-	#timer.wait_time = 2 # default is 1 sec
-	add_child(timer)
-	timer.connect("timeout", _every_sec)
-	timer.start()
-
-func _every_sec() -> void:
-	pass
-	#fillAudio.play() # TODO to use when numbers are added back
-	#incomingTickAudio.play() # TODO to use when bar is about to exhaust (seconds 4 to 1)
-	#mergeAudio.play()
-	#mistakeAudio.play()
-	#penaltyAudio.play() # TODO to use when bar is exhausted
+			set_tile_cell(coords, 1) #??
 	
-			
+func _process(delta):
+	if bar_left - delta <= 0:
+		clear_cells()
+		bar_left = lvl["penalty_countdown"]
+		penaltyAudio.play()
+	else:
+		bar_left -= delta
+		
+	if fill_left - delta <= 0:
+		fill_empty_cell()
+		fill_left = lvl["fill_countdown"]
+		fillAudio.play()
+	else:
+		fill_left -= delta
+
 func set_tile_cell(coords: Vector2i, num: int):
 	var num_s = "%s" % num
 	set_cell(DEFAULT_LAYER, coords, TILE_SET_ID, CELLS[num_s])
@@ -133,7 +138,7 @@ func _input(event: InputEvent):
 			mergeAudio.play()
 		else:
 			mistakeAudio.play()
-			# TODO: decrease bar
+			bar_left -= 1.0
 
 func clear_cells():
 	var positions = get_board_positions()
@@ -146,7 +151,7 @@ func clear_cells():
 	
 func fill_empty_cell():
 	var positions = get_board_positions()
-	var p = rng.randi_range(0, positions.size())
+	var p = positions[ rng.randi_range(0, positions.size()-1) ]
 	set_tile_cell(p, 1)
 
 func get_board_positions() -> Array:
