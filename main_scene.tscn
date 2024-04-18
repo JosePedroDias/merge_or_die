@@ -1,8 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://1ut045hnvr7n"]
+[gd_scene load_steps=10 format=3 uid="uid://1ut045hnvr7n"]
 
 [ext_resource type="Texture2D" uid="uid://crbpai1h35w2y" path="res://merge_atlas.png" id="1_x3oqr"]
 [ext_resource type="Script" path="res://Scripts/merge_grid.gd" id="2_mpn81"]
 [ext_resource type="AudioStream" uid="uid://du31e7pweidul" path="res://Assets/Sounds/fill.wav" id="3_m8s8k"]
+[ext_resource type="AudioStream" uid="uid://bhwk1ahya1rch" path="res://Assets/Sounds/incoming_tick.wav" id="4_4ejf5"]
+[ext_resource type="AudioStream" uid="uid://dhp44rhsqogo6" path="res://Assets/Sounds/merge.wav" id="5_n1hh7"]
+[ext_resource type="AudioStream" uid="uid://br4n1qr3xebvq" path="res://Assets/Sounds/mistake.wav" id="6_g1d2b"]
+[ext_resource type="AudioStream" uid="uid://dlcq661o7im5m" path="res://Assets/Sounds/penalty.wav" id="7_oh786"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0o4vv"]
 texture = ExtResource("1_x3oqr")
@@ -26,35 +30,11 @@ custom_data_layer_0/name = "num"
 custom_data_layer_0/type = 2
 sources/0 = SubResource("TileSetAtlasSource_0o4vv")
 
-[sub_resource type="GDScript" id="GDScript_846dp"]
-script/source = "extends Timer
-
-
-
-var t = 0.0
-var last_t = - 1.0/60.0
-
-func _ready():
-	pass # Replace with function body.
-	
-
-func _process(delta):
-	pass
-	#print(time_left)
-	
-	#t += delta
-	#if int(t) != int(last_t):
-	#	print('play', t)
-	#	print('player', player)
-	#	#player.play()
-	#last_t = t
-"
-
 [node name="main_scene" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="TileMap" type="TileMap" parent="." node_paths=PackedStringArray("player1")]
+[node name="TileMap" type="TileMap" parent="." node_paths=PackedStringArray("fillAudio", "incomingTickAudio", "mergeAudio", "mistakeAudio", "penaltyAudio")]
 tile_set = SubResource("TileSet_h3ejf")
 rendering_quadrant_size = 64
 format = 2
@@ -65,11 +45,23 @@ layer_1/tile_data = PackedInt32Array()
 script = ExtResource("2_mpn81")
 columns = 6
 rows = 4
-player1 = NodePath("../AudioStreamPlayer")
+fillAudio = NodePath("../AudioStreamPlayerFill")
+incomingTickAudio = NodePath("../AudioStreamPlayerIncomingTick")
+mergeAudio = NodePath("../AudioStreamPlayerMerge")
+mistakeAudio = NodePath("../AudioStreamPlayerMistake")
+penaltyAudio = NodePath("../AudioStreamPlayerPenalty")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+[node name="AudioStreamPlayerFill" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_m8s8k")
 
-[node name="Timer" type="Timer" parent="."]
-autostart = true
-script = SubResource("GDScript_846dp")
+[node name="AudioStreamPlayerIncomingTick" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_4ejf5")
+
+[node name="AudioStreamPlayerMerge" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_n1hh7")
+
+[node name="AudioStreamPlayerMistake" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_g1d2b")
+
+[node name="AudioStreamPlayerPenalty" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_oh786")

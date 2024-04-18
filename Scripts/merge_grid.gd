@@ -7,7 +7,11 @@ class_name MergeGrid
 @export_range(1, 40) var rows    = 12
 
 @export_category("audios")
-@export var player1: Node
+@export var fillAudio: Node
+@export var incomingTickAudio: Node
+@export var mergeAudio: Node
+@export var mistakeAudio: Node
+@export var penaltyAudio: Node
 
 var highlighted = null
 
@@ -45,7 +49,12 @@ func _ready():
 	timer.start()
 
 func _every_sec() -> void:
-	player1.play()
+	fillAudio.play() # TODO to use when numbers are added back
+	#incomingTickAudio.play() # TODO to use when bar is about to exhaust (seconds 4 to 1)
+	#mergeAudio.play()
+	#mistakeAudio.play()
+	#penaltyAudio.play() # TODO to use when bar is exhausted
+	
 			
 func set_tile_cell(coords: Vector2i, num: int):
 	var num_s = "%s" % num
@@ -88,4 +97,8 @@ func _input(event: InputEvent):
 				set_cell(	DEFAULT_LAYER, coord, TILE_SET_ID, CELLS["%s" % v])
 				var td2 = get_cell_tile_data(DEFAULT_LAYER, coord, TILE_SET_ID)
 				td2.set_custom_data('num', v)
+				mergeAudio.play()
+			else:
+				mistakeAudio.play()
+				# TODO: decrease bar
 			
