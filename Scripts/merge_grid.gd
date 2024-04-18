@@ -2,8 +2,12 @@ extends TileMap
 
 class_name MergeGrid
 
-@export var columns = 12
-@export var rows    = 12
+@export_category("dimensions")
+@export_range(1, 40) var columns = 12
+@export_range(1, 40) var rows    = 12
+
+@export_category("audios")
+@export var player1: Node
 
 var highlighted = null
 
@@ -34,7 +38,14 @@ func _ready():
 			)
 			set_tile_cell(coords, 1)
 			
-	#set_highlight(Vector2i(0, 0))
+	var timer := Timer.new()
+	#timer.wait_time = 2 # default is 1 sec
+	add_child(timer)
+	timer.connect("timeout", _every_sec)
+	timer.start()
+
+func _every_sec() -> void:
+	player1.play()
 			
 func set_tile_cell(coords: Vector2i, num: int):
 	var num_s = "%s" % num

@@ -4,3 +4,4 @@
 .DS_Store
 web/*
 !web/Caddyfile
+Assets/.DS_Store
