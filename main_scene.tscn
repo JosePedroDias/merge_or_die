@@ -40,7 +40,7 @@ font_color = Color(0.886275, 0, 0.886275, 1)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="TileMap" type="TileMap" parent="." node_paths=PackedStringArray("fillAudio", "incomingTickAudio", "mergeAudio", "mistakeAudio", "penaltyAudio")]
+[node name="TileMap" type="TileMap" parent="." node_paths=PackedStringArray("fillAudio", "incomingTickAudio", "mergeAudio", "mistakeAudio", "penaltyAudio", "label", "bar")]
 tile_set = SubResource("TileSet_h3ejf")
 rendering_quadrant_size = 64
 format = 2
@@ -56,6 +56,8 @@ incomingTickAudio = NodePath("../AudioStreamPlayerIncomingTick")
 mergeAudio = NodePath("../AudioStreamPlayerMerge")
 mistakeAudio = NodePath("../AudioStreamPlayerMistake")
 penaltyAudio = NodePath("../AudioStreamPlayerPenalty")
+label = NodePath("../UiTopLabel")
+bar = NodePath("../PenaltyBar")
 
 [node name="AudioStreamPlayerFill" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_m8s8k")
@@ -77,10 +79,31 @@ volume_db = -25.53
 stream = ExtResource("7_oh786")
 volume_db = -13.974
 
-[node name="Label" type="Label" parent="."]
-offset_left = -105.0
-offset_top = -471.0
-offset_right = 114.0
-offset_bottom = -425.0
+[node name="UiTopLabel" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -106.0
+offset_top = -455.0
+offset_right = 113.0
+offset_bottom = -409.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "hello world"
 label_settings = SubResource("LabelSettings_3bsop")
+horizontal_alignment = 1
+
+[node name="PenaltyBar" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -448.0
+offset_top = 406.0
+offset_right = 452.0
+offset_bottom = 456.0
+grow_horizontal = 2
+grow_vertical = 2
