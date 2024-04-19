@@ -28,6 +28,8 @@ const TILE_SET_ID = 0
 const DEFAULT_LAYER = 0
 const HIGHLIGHTS_LAYER = 1
 
+const FINAL_LEVEL = 4 # TODO wierd, this should work?: !levels.has(str(level)
+
 const CELLS = {
 	"1": Vector2i(0, 0),
 	"2": Vector2i(1, 0),
@@ -41,12 +43,6 @@ const CELLS = {
 }
 
 var levels = {
-	11: { # aux level
-		"size": [5, 5],
-		"penalty_countdown": 15.0,
-		"fill_countdown": 2.0,
-		"goal_number": 3,
-	},
 	1: {
 		"size": [5, 5],
 		"penalty_countdown": 75.0,
@@ -72,13 +68,12 @@ var levels = {
 		"goal_number": 8,
 	},
 }
-
-#var lvl: LevelDef = 
-
 var lvl = levels[level]
 
 var bar_left = lvl["penalty_countdown"]
 var fill_left = lvl["fill_countdown"]
+var elapsed_time = 0.0
+var is_paused = true
 
 func _reset_board():
 	clear_layer(DEFAULT_LAYER)
@@ -90,20 +85,33 @@ func _reset_board():
 	position.x = -32 if columns % 2 == 1 else 0
 	position.y = -32 if rows    % 2 == 1 else 0
 	
+	var dx = 0.5 if columns % 2 == 1 else 0
+	var dy = 0.5 if rows    % 2 == 1 else 0
+	
 	for y in rows:
 		for x in columns:
 			var coords = Vector2i(
-				int(x - columns/2.0 + 0.5),
-				int(y - rows   /2.0 + 0.5)
+				int(x - columns/2.0 + dx),
+				int(y - rows   /2.0 + dy)
 			)
 			set_tile_cell(coords, 1)
 
 func _ready() -> void:
 	_reset_board()
-	_update_label()
 	_update_bar()
+	_update_label("click to start level %d" % level)
 	
 func _process(delta: float) -> void:
+	if is_paused:
+		if level > FINAL_LEVEL:
+			level = 1
+			elapsed_time = 0.0
+			lvl = levels[level]
+			_reset_board()
+		return
+	
+	elapsed_time += delta
+	
 	if bar_left - delta <= 0:
 		clear_cells()
 		bar_left = lvl["penalty_countdown"]
@@ -121,7 +129,6 @@ func _process(delta: float) -> void:
 	_update_bar()
 	_update_label()
 	
-
 func set_tile_cell(coords: Vector2i, num: int) -> void:
 	var num_s = "%s" % num
 	set_cell(DEFAULT_LAYER, coords, TILE_SET_ID, CELLS[num_s])
@@ -149,10 +156,12 @@ func _validate_coords(coords: Vector2i) -> bool:
 	var y = coords[1]
 	return x >= min_x && x < min_x + columns && y >= min_y && y < min_y + rows
 
-func _update_label():
-	label.text = "level:%d  goal:%s  %ds" % [1, 2, 3]
+func _update_label(text = false):
+	if text:
+		label.text = text
+	else:
+		label.text = "level:%d  goal:%s  %.1fs" % [level, lvl["goal_number"], elapsed_time]
 	
-
 # r is how full, where 0 is empty
 func _update_bar() -> void:
 	var r = bar_left / lvl["penalty_countdown"]
@@ -169,6 +178,11 @@ func _input(event: InputEvent) -> void:
 	
 	# ignore events from types other than input event
 	if !(event is InputEventMouseButton) || !event.pressed: return
+	
+	if is_paused:
+		is_paused = false
+		_update_label()
+		return
 	
 	# convert coords and make sure they're in the board
 	var coord = local_to_map(get_local_mouse_position())
@@ -200,13 +214,17 @@ func _input(event: InputEvent) -> void:
 			set_tile_cell(coord, v)
 			mergeAudio.play()
 			if v == lvl["goal_number"]:
-				#print('level complete')
+				is_paused = true
 				level += 1
-				lvl = levels[level]
-				#print(lvl)
-				columns = lvl["size"][0]
-				rows    = lvl["size"][1]
-				_reset_board()
+				if level > FINAL_LEVEL:
+					_update_label("congratulations!\nfinished the game in %.1f seconds!" % elapsed_time)
+				else:
+					lvl = levels[level]
+					columns = lvl["size"][0]
+					rows    = lvl["size"][1]
+					_reset_board()
+					_update_bar()
+					_update_label("click to start level %d" % level)
 		else:
 			# numbers differ, penalize player!
 			mistakeAudio.play()
@@ -242,9 +260,3 @@ func get_matching_positions(arr: Array, fn) -> Array:
 		if fn.call(p):
 			arr2.push_back(p)
 	return arr2
-
-class LevelDef:
-	var size: Vector2i
-	var penalty_countdown: float
-	var fill_countdown: float
-	var goal_number: int

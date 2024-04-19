@@ -34,7 +34,7 @@ sources/0 = SubResource("TileSetAtlasSource_0o4vv")
 [sub_resource type="LabelSettings" id="LabelSettings_3bsop"]
 font = ExtResource("8_rrej1")
 font_size = 45
-font_color = Color(0.886275, 0, 0.886275, 1)
+font_color = Color(1, 1, 1, 0.235294)
 
 [node name="main_scene" type="Node2D"]
 
