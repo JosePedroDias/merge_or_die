@@ -2,6 +2,6 @@
 .godot/
 
 .DS_Store
-web/*
-!web/Caddyfile
+#web/*
+#!web/Caddyfile
 Assets/.DS_Store

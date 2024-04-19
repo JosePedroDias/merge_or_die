@@ -15,7 +15,13 @@ Project > Export
 Export Project
 
 on the terminal:
-	cd web
-	caddy run
+
+    cd web
+    caddy run
 
 visit https://localhost/
+
+# COI fixes
+
+- download this [coi-serviceworker](https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.js)
+- add it to the exported page's head `<script src="coi-serviceworker.js"></script>`
