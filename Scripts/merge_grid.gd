@@ -107,12 +107,18 @@ func get_tile_num(coord: Vector2i):
 	return null
 
 func set_highlight(coords: Vector2i, state: bool):
-	#highlighted = coords
 	clear_layer(HIGHLIGHTS_LAYER)
 	if state:
 		set_cell(HIGHLIGHTS_LAYER, coords, TILE_SET_ID, CELLS["highlight"])
 	else:
 		erase_cell(HIGHLIGHTS_LAYER, coords)
+
+func _validate_coords(coords):
+	var min_x = int(-columns/2.0)
+	var min_y = int(-rows/2.0)
+	var x = coords[0]
+	var y = coords[1]
+	return x >= min_x && x < min_x + columns && y >= min_y && y < min_y + rows
 
 func _input(event: InputEvent):
 	if !(event is InputEventMouseButton) || !event.pressed:
@@ -120,10 +126,22 @@ func _input(event: InputEvent):
 		
 	var coord = local_to_map(get_local_mouse_position())
 	
+	print(coord)
+	var is_valid = _validate_coords(coord)
+	if !is_valid:
+		print('early abort')
+		return
+	
 	if highlighted == null:
+		# first pair click
 		highlighted = coord
 		set_highlight(coord, true)
+	elif highlighted && highlighted[0] == coord[0] && highlighted[1] == coord[1]:
+		# same cell
+		highlighted = null
+		set_highlight(coord, false)
 	else:
+		# regular pair
 		var coord0 = highlighted
 		highlighted = null
 		set_highlight(coord, false)
@@ -132,11 +150,13 @@ func _input(event: InputEvent):
 		var v0 = get_tile_num(coord0)
 
 		if v == v0:
+			# numbers are the same, ok
 			erase_cell(DEFAULT_LAYER, coord0)
 			v += 1
 			set_tile_cell(coord, v)
 			mergeAudio.play()
 		else:
+			# numbers differ, penalize player!
 			mistakeAudio.play()
 			bar_left -= 1.0
 

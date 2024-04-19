@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://1ut045hnvr7n"]
+[gd_scene load_steps=12 format=3 uid="uid://1ut045hnvr7n"]
 
 [ext_resource type="Texture2D" uid="uid://crbpai1h35w2y" path="res://merge_atlas.png" id="1_x3oqr"]
 [ext_resource type="Script" path="res://Scripts/merge_grid.gd" id="2_mpn81"]
@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://dhp44rhsqogo6" path="res://Assets/Sounds/merge.wav" id="5_n1hh7"]
 [ext_resource type="AudioStream" uid="uid://br4n1qr3xebvq" path="res://Assets/Sounds/mistake.wav" id="6_g1d2b"]
 [ext_resource type="AudioStream" uid="uid://dlcq661o7im5m" path="res://Assets/Sounds/penalty.wav" id="7_oh786"]
+[ext_resource type="FontFile" uid="uid://c8r7c6ao811bi" path="res://Assets/Fonts/univers-light-normal.ttf" id="8_rrej1"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0o4vv"]
 texture = ExtResource("1_x3oqr")
@@ -29,6 +30,11 @@ tile_size = Vector2i(64, 64)
 custom_data_layer_0/name = "num"
 custom_data_layer_0/type = 2
 sources/0 = SubResource("TileSetAtlasSource_0o4vv")
+
+[sub_resource type="LabelSettings" id="LabelSettings_3bsop"]
+font = ExtResource("8_rrej1")
+font_size = 45
+font_color = Color(0.886275, 0, 0.886275, 1)
 
 [node name="main_scene" type="Node2D"]
 
@@ -70,3 +76,11 @@ volume_db = -25.53
 [node name="AudioStreamPlayerPenalty" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_oh786")
 volume_db = -13.974
+
+[node name="Label" type="Label" parent="."]
+offset_left = -105.0
+offset_top = -471.0
+offset_right = 114.0
+offset_bottom = -425.0
+text = "hello world"
+label_settings = SubResource("LabelSettings_3bsop")
