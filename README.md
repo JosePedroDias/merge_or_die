@@ -4,11 +4,8 @@ This is the simplest (lamest) port of my ludum dare entry in Rust/Comfy to Godot
 
 # TODO
 
-- display UI overlay
-  - level nr
-  - goal
-- display shrinking bar
-- change level (4 possible)
+- update ui label
+- pause between levels
 
 # test on web
 

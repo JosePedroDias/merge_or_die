@@ -41,6 +41,12 @@ const CELLS = {
 }
 
 var levels = {
+	11: { # aux level
+		"size": [5, 5],
+		"penalty_countdown": 15.0,
+		"fill_countdown": 2.0,
+		"goal_number": 3,
+	},
 	1: {
 		"size": [5, 5],
 		"penalty_countdown": 75.0,
@@ -67,24 +73,35 @@ var levels = {
 	},
 }
 
+#var lvl: LevelDef = 
+
 var lvl = levels[level]
 
 var bar_left = lvl["penalty_countdown"]
 var fill_left = lvl["fill_countdown"]
 
-func _ready() -> void:
+func _reset_board():
 	clear_layer(DEFAULT_LAYER)
+	
+	bar_left = lvl["penalty_countdown"]
+	fill_left = lvl["fill_countdown"]
+	
+	# keep tilemap centered on odd dimensions
+	position.x = -32 if columns % 2 == 1 else 0
+	position.y = -32 if rows    % 2 == 1 else 0
 	
 	for y in rows:
 		for x in columns:
 			var coords = Vector2i(
-				int(x - columns/2.0),
-				int(y - rows   /2.0)
+				int(x - columns/2.0 + 0.5),
+				int(y - rows   /2.0 + 0.5)
 			)
-			set_tile_cell(coords, 1) #??
-	
+			set_tile_cell(coords, 1)
+
+func _ready() -> void:
+	_reset_board()
 	_update_label()
-	_update_bar(1.0)
+	_update_bar()
 	
 func _process(delta: float) -> void:
 	if bar_left - delta <= 0:
@@ -95,11 +112,15 @@ func _process(delta: float) -> void:
 		bar_left -= delta
 		
 	if fill_left - delta <= 0:
-		fill_empty_cell()
+		if fill_empty_cell(): fillAudio.play()
 		fill_left = lvl["fill_countdown"]
-		fillAudio.play()
 	else:
 		fill_left -= delta
+	
+	# TODO update these only at 10fps?
+	_update_bar()
+	_update_label()
+	
 
 func set_tile_cell(coords: Vector2i, num: int) -> void:
 	var num_s = "%s" % num
@@ -107,11 +128,12 @@ func set_tile_cell(coords: Vector2i, num: int) -> void:
 	var td = get_cell_tile_data(DEFAULT_LAYER, coords, TILE_SET_ID)
 	td.set_custom_data('num', num)
 
-func get_tile_num(coord: Vector2i):
+# can also return null
+func get_tile_num(coord: Vector2i) -> int:
 	var td = get_cell_tile_data(DEFAULT_LAYER, coord, TILE_SET_ID)
 	if td:
 		return td.get_custom_data('num')
-	return null
+	return -1
 
 func set_highlight(coords: Vector2i, state: bool) -> void:
 	clear_layer(HIGHLIGHTS_LAYER)
@@ -132,15 +154,14 @@ func _update_label():
 	
 
 # r is how full, where 0 is empty
-func _update_bar(r: float) -> void:
+func _update_bar() -> void:
+	var r = bar_left / lvl["penalty_countdown"]
+	
 	var w = 900 * r
 	bar.set_size(Vector2(w, 50))
 	var sb = bar.get_theme_stylebox("panel")
 	sb.set("bg_color", Color(1.0, r, 0.0))
 	bar.position.x = 0.0 - w/2.0
-
-	#bar.material.set_
-	# TODO change color and size
 
 func _input(event: InputEvent) -> void:
 	# escape exits the game
@@ -178,8 +199,14 @@ func _input(event: InputEvent) -> void:
 			v += 1
 			set_tile_cell(coord, v)
 			mergeAudio.play()
-			_update_label()
-			_update_bar(rng.randf())
+			if v == lvl["goal_number"]:
+				#print('level complete')
+				level += 1
+				lvl = levels[level]
+				#print(lvl)
+				columns = lvl["size"][0]
+				rows    = lvl["size"][1]
+				_reset_board()
 		else:
 			# numbers differ, penalize player!
 			mistakeAudio.play()
@@ -188,16 +215,16 @@ func _input(event: InputEvent) -> void:
 func clear_cells() -> void:
 	var positions = get_board_positions()
 	for p in positions:
-		if get_tile_num(p) == null:
-			continue
+		if get_tile_num(p) == -1: continue
 		var r = rng.randf_range(0.0, 1.0)
-		if r < 0.25:
-			erase_cell(DEFAULT_LAYER, p)
+		if r < 0.25: erase_cell(DEFAULT_LAYER, p)
 	
-func fill_empty_cell() -> void:
-	var positions = get_board_positions()
-	var p = positions[ rng.randi_range(0, positions.size()-1) ]
+func fill_empty_cell() -> bool:
+	var empty_positions = get_board_positions().filter(func(p): return get_tile_num(p) == -1)
+	if empty_positions.size() == 0: return false
+	var p: Vector2i = empty_positions[ rng.randi_range(0, empty_positions.size()-1) ]
 	set_tile_cell(p, 1)
+	return true
 
 func get_board_positions() -> Array:
 	var arr: Array = []
@@ -215,3 +242,9 @@ func get_matching_positions(arr: Array, fn) -> Array:
 		if fn.call(p):
 			arr2.push_back(p)
 	return arr2
+
+class LevelDef:
+	var size: Vector2i
+	var penalty_countdown: float
+	var fill_countdown: float
+	var goal_number: int
