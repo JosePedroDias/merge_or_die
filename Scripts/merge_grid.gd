@@ -85,8 +85,8 @@ func _reset_board():
 	position.x = -32 if columns % 2 == 1 else 0
 	position.y = -32 if rows    % 2 == 1 else 0
 	
-	var dx = 0.5 if columns % 2 == 1 else 0
-	var dy = 0.5 if rows    % 2 == 1 else 0
+	var dx = 0.5 if columns % 2 == 1 else 0.0
+	var dy = 0.5 if rows    % 2 == 1 else 0.0
 	
 	for y in rows:
 		for x in columns:
@@ -112,11 +112,14 @@ func _process(delta: float) -> void:
 	
 	elapsed_time += delta
 	
+	# update timers
 	if bar_left - delta <= 0:
 		clear_cells()
 		bar_left = lvl["penalty_countdown"]
 		penaltyAudio.play()
 	else:
+		if bar_left > 0.5 && bar_left < 5.5 && int(bar_left) != int(bar_left + delta):
+			incomingTickAudio.play()
 		bar_left -= delta
 		
 	if fill_left - delta <= 0:
@@ -238,7 +241,7 @@ func clear_cells() -> void:
 		if r < 0.25: erase_cell(DEFAULT_LAYER, p)
 	
 func fill_empty_cell() -> bool:
-	var empty_positions = get_board_positions().filter(func(p): return get_tile_num(p) == -1)
+	var empty_positions = get_board_positions().filter(func(pp): return get_tile_num(pp) == -1)
 	if empty_positions.size() == 0: return false
 	var p: Vector2i = empty_positions[ rng.randi_range(0, empty_positions.size()-1) ]
 	set_tile_cell(p, 1)

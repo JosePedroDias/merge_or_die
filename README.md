@@ -4,7 +4,6 @@ This is the simplest (lamest) port of my ludum dare entry in Rust/Comfy to Godot
 
 # TODO
 
-- play 4 ticks before penalty
 - stretch goal: persist highest score, present it at start and completed game
 - stretch goal: move/scale matched tile
 - stretch goal: particle effect when penalty
